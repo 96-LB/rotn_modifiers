@@ -26,12 +26,13 @@ public class ModifiersPlugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger;
 
-    public const string ALLOWED_VERSIONS = "1.12.0 1.11.1 1.10.0 1.8.0 1.7.1 1.7.0";
+    public const string ALLOWED_VERSIONS = "1.14.1 1.12.0 1.11.1 1.10.0 1.8.0 1.7.1 1.7.0";
     public static string[] AllowedVersions => ALLOWED_VERSIONS.Split(' ');
 
     public static float timer = 0;
 
     public static Dictionary<string, bool> pin_overrides;
+    public static bool customRemix = false;
     public static int GloomRowOverride = 3;
 
     private void Awake()
@@ -66,10 +67,19 @@ public class ModifiersPlugin : BaseUnityPlugin
         Logger.LogInfo("Finished Init"); 
     }
 
+
+    [HarmonyPatch(typeof(RRDynamicScenePayload), "FromMetadata")]
+    [HarmonyPostfix]
+    public static void FromMetadata(RRDynamicScenePayload __result)
+    {
+        __result.ShouldProcGen = customRemix;
+    }
+
     [HarmonyPatch(typeof(RRStageController), "Update")]
     [HarmonyPostfix]
     public static void StageUpdate()
     {
+        
         ModifierKeybinds();
     }
 
@@ -110,6 +120,7 @@ public class ModifiersPlugin : BaseUnityPlugin
         if( UnityInput.Current.GetKeyDown(KeyCode.F2)) pin_overrides["Enigma"] = !pin_overrides["Enigma"];
         if( UnityInput.Current.GetKeyDown(KeyCode.F3)) pin_overrides["GlassGuitar"] = !pin_overrides["GlassGuitar"];
         if( UnityInput.Current.GetKeyDown(KeyCode.F4)) pin_overrides["Perfectionist"] = !pin_overrides["Perfectionist"];
+        if( UnityInput.Current.GetKeyDown(KeyCode.F5)) customRemix = !customRemix;
 
         for( int i = 0; i < 9; i++)
         {
