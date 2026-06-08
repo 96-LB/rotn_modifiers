@@ -37,6 +37,11 @@
     </Reference>
   </ItemGroup>
     <ItemGroup>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>lib/UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+    <ItemGroup>
     <Reference Include="Unity.Addressables">
       <HintPath>lib/Unity.Addressables.dll</HintPath>
     </Reference>
