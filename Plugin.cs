@@ -61,6 +61,7 @@ public class ModifiersPlugin : BaseUnityPlugin
     private static Sprite remixOn = null;
     private static Sprite remixOff = null;
 
+    public static CustomTracksSelectionSceneController currentTrackController = null;
 
     private Sprite load_sprite( string path )
     {
@@ -120,7 +121,7 @@ public class ModifiersPlugin : BaseUnityPlugin
         {
             Harmony.CreateAndPatchAll(typeof(ModifiersPlugin));
         }
-        Logger.LogInfo("Finished Init"); 
+        Logger.LogInfo("Finished Init");
     }
 
 
@@ -129,6 +130,35 @@ public class ModifiersPlugin : BaseUnityPlugin
     public static void FromMetadata(RRDynamicScenePayload __result)
     {
         __result.ShouldProcGen = customRemix;
+    }
+
+    [HarmonyPatch(typeof(CustomTracksSelectionSceneController), "Awake")]
+    [HarmonyPostfix]
+    public static void SaveTrackController(CustomTracksSelectionSceneController __instance)
+    {
+        currentTrackController = __instance;
+    }
+
+    [HarmonyPatch(typeof(CustomTracksSelectionSceneController), "FillInTrackDetails")]
+    [HarmonyPostfix]
+    public static void ForceRemixLeaderboard(CustomTracksSelectionSceneController __instance)
+    {
+        if (__instance._leaderboardOverlayHandler)
+        {
+            __instance._leaderboardOverlayHandler.Remix = customRemix;
+        }
+    }
+    public static void RefreshLeaderboard()
+    {
+        if (currentTrackController == null)
+            return;
+
+        if (currentTrackController._leaderboardOverlayHandler)
+        {
+            currentTrackController._leaderboardOverlayHandler.Remix = customRemix;
+        }
+
+        currentTrackController.FillInTrackDetails();
     }
 
     [HarmonyPatch(typeof(RRStageController), "Update")]
@@ -232,6 +262,8 @@ public class ModifiersPlugin : BaseUnityPlugin
         {
             customRemix = !customRemix;
             if( remixImage is not null ) remixImage.sprite = customRemix ? remixOn : remixOff;
+
+            RefreshLeaderboard();
         } 
 
         for( int i = 0; i < 7; i++)
