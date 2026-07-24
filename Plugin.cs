@@ -6,7 +6,7 @@ using UnityEngine;
 namespace ModMod;
 
 
-[BepInPlugin("rotn.katie.mod.mod", "ModMod", "0.1.0")]
+[BepInPlugin("rotn.katie.mod.mod", "ModMod", "1.1.0")]
 public class Plugin : RiftPlugin {
     protected override void OnInit() {
         Modifier.Create("Gloom", Assets.GetSprite(SpriteType.GloomOff), Assets.GetSprite(SpriteType.GloomOn));
