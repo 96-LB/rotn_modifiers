@@ -30,4 +30,8 @@ public class Plugin : RiftPlugin {
             }
         }
     }
+    
+    protected override void OnUnload() {
+        Modifier.ClearAll();
+    }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements.Collections;
 namespace ModMod;
 
 public record Modifier(string Name, Sprite OnSprite, Sprite OffSprite, int Index) {
@@ -29,6 +30,7 @@ public record Modifier(string Name, Sprite OnSprite, Sprite OffSprite, int Index
     }
     
     public static void SetIcon(Modifier mod, Image image) {
+        Object.Destroy(Icons.Get(mod)?.gameObject);
         Icons[mod] = image;
         image.sprite = Enabled[mod] ? mod.OnSprite : mod.OffSprite;
     }
@@ -37,5 +39,13 @@ public record Modifier(string Name, Sprite OnSprite, Sprite OffSprite, int Index
         Enabled[mod] = !Enabled[mod];
         Icons[mod]?.sprite = Enabled[mod] ? mod.OnSprite : mod.OffSprite;
         return Enabled[mod];
+    }
+    
+    public static void ClearAll() {
+        foreach(var icon in Icons.Values) {
+            Object.Destroy(icon?.gameObject);
+        }
+        Enabled.Clear();
+        Icons.Clear();
     }
 }
