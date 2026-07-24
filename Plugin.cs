@@ -1,35 +1,26 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using BepInEx;
-using BepInEx.Logging;
-using HarmonyLib;
-using RhythmRift;
-using Shared;
-using Shared.Pins;
-using Shared.SceneLoading.Payloads;
-using Shared.TrackSelection;
+using RiftOfTheNecroManager;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Modifiers;
 
-[BepInPlugin("rotn.katie.mod.mod", "ModMod", "0.1.0")]
-public class ModifiersPlugin : BaseUnityPlugin
-{
-    internal static new ManualLogSource Logger;
-
-    public const string ALLOWED_VERSIONS = "1.15.0 1.14.1 1.12.0 1.11.1 1.10.0 1.8.0 1.7.1 1.7.0";
-    public static string[] AllowedVersions => ALLOWED_VERSIONS.Split(' ');
-
+[BepInPlugin("rotn.katie.mod.mod", "ModMod", "0.0.1")]
+[NecroManagerInfo(isBeta: true)]
+public class ModifiersPlugin : RiftPlugin {
     public static float timer = 0;
 
-    public static Dictionary<string, bool> pin_overrides;
+    public static Dictionary<string, bool> pin_overrides = new() {
+        ["Gloom"] = false,
+        ["Enigma"] = false,
+        ["GlassGuitar"] = false,
+        ["Perfectionist"] = false
+    };
+    
     public static bool customRemix = false;
     public static int GloomRowOverride = 3;
-
-    private static string install_loc = "";
 
     public static Image gloomImage = null;
     private static Sprite gloomOn = null;
@@ -54,7 +45,7 @@ public class ModifiersPlugin : BaseUnityPlugin
 
     private Sprite load_sprite( string path )
     {
-        byte[] gloom_on_bytes = File.ReadAllBytes(install_loc + path);
+        byte[] gloom_on_bytes = File.ReadAllBytes(PluginData.Info.Location + path);
         Texture2D gloom_tex = new Texture2D(2,2);
         ImageConversion.LoadImage( gloom_tex, gloom_on_bytes  );
         return Sprite.Create( gloom_tex, new Rect(0,0, gloom_tex.width, gloom_tex.height), new Vector2(0.5f,0.5f), 100.0f );
@@ -62,17 +53,8 @@ public class ModifiersPlugin : BaseUnityPlugin
 
     private void Awake()
     {
-        Logger = base.Logger;
 
-        pin_overrides = new Dictionary<string, bool>();
-        pin_overrides["Gloom"] = false;
-        pin_overrides["Enigma"] = false;
-        pin_overrides["GlassGuitar"] = false;
-        pin_overrides["Perfectionist"] = false;
-
-        install_loc = Path.GetDirectoryName( base.Info.Location );
-
-        Logger.LogInfo(install_loc + "\\icons\\GloomOn.png");
+        Logger.LogInfo(PluginData.Info.Location + "\\icons\\GloomOn.png");
 
         gloomOn = load_sprite("\\icons\\GloomOn.png");
         gloomOff = load_sprite("\\icons\\GloomOff.png");
@@ -88,53 +70,10 @@ public class ModifiersPlugin : BaseUnityPlugin
 
         remixOn = load_sprite("\\icons\\RemixOn.png");
         remixOff = load_sprite("\\icons\\RemixOff.png");
-
-        // Plugin startup logic
-        
-        Logger.LogInfo($"Plugin is loaded!");
-
-        Logger.LogInfo(install_loc);
-
-        var gameVersion = BuildInfoHelper.Instance.BuildId.Split('-')[0];
-
-        Logger.LogInfo("Initialising config");
-
-        Modifiers.Config.Initialize(Config);
-        Logger.LogInfo("Initialised config");
-        if (!AllowedVersions.Contains(gameVersion) && !Modifiers.Config.General.DisableVersionCheck.Value)
-        {
-            Logger.LogInfo("Invalid game version, ask for an update or disable version check in config");
-            return;
-        }
-        else
-        {
-            Harmony.CreateAndPatchAll(typeof(ModifiersPlugin));
-        }
-        Logger.LogInfo("Finished Init");
     }
 
 
-    [HarmonyPatch(typeof(RRDynamicScenePayload), "FromMetadata")]
-    [HarmonyPostfix]
-    public static void FromMetadata(RRDynamicScenePayload __result)
-    {
-        __result.ShouldProcGen = customRemix;
-    }
 
-    [HarmonyPatch(typeof(RRStageController), "Update")]
-    [HarmonyPostfix]
-    public static void StageUpdate()
-    {
-        
-        ModifierKeybinds();
-    }
-
-    [HarmonyPatch(typeof(TrackSelectionSceneController), "Update")]
-    [HarmonyPostfix]
-    public static void TrackSelectUpdate()
-    {
-        ModifierKeybinds();
-    }
 
     private static Image createIcon(RectTransform screen, float top, float step, float idx, string name)
     {
@@ -153,51 +92,6 @@ public class ModifiersPlugin : BaseUnityPlugin
         return img;
     }
 
-    [HarmonyPatch(typeof(CustomTracksSelectionSceneController), "Awake")]
-    [HarmonyPrefix]
-    public static void CTrackSelectAwake(CustomTracksSelectionSceneController __instance)
-    {
-        Transform canvas = __instance._mainCanvas.transform;
-        RectTransform screen = (RectTransform)canvas.transform.Find("ScreenContainer");
-
-        float top = 800.0f;
-        float step = 70.0f;
-
-        gloomImage = createIcon( screen, top, step, 0, "GloomIcon" );
-        gloomImage.sprite = pin_overrides["Gloom"] ? gloomOn : gloomOff;
-        enigmaImage = createIcon( screen, top, step, 1, "EnigmaIcon" );
-        enigmaImage.sprite = pin_overrides["Enigma"] ? enigmaOn : enigmaOff;
-        glassImage = createIcon( screen, top, step, 2, "GlassIcon" );
-        glassImage.sprite = pin_overrides["GlassGuitar"] ? glassOn : glassOff;
-        perfImage = createIcon( screen, top, step, 3, "PerfIcon" );
-        perfImage.sprite = pin_overrides["Perfectionist"] ? perfOn : perfOff;
-        remixImage = createIcon( screen, top, step, 4, "RemixIcon" );
-        remixImage.sprite = customRemix ? remixOn : remixOff;
-    }
-
-    [HarmonyPatch(typeof(CustomTracksSelectionSceneController), "Update")]
-    [HarmonyPostfix]
-    public static void CTrackSelectUpdate()
-    {
-        ModifierKeybinds();
-    }
-    
-    [HarmonyPatch(typeof(RRStageController), "ApplyActivePinEffects")]
-    [HarmonyPostfix]
-    public static void CustomGloom( RRStageController __instance )
-    {
-        if (PinsController.IsPinActive("Gloom"))
-        {
-            for (int i = 0; i < GloomRowOverride; i++)
-            {
-                Animator animator = __instance._obscureAnimators[i];
-                if ((bool)animator)
-                {
-                    animator.SetTrigger("GloomOn");
-                }
-            }
-        }
-    }
 
     public static void ModifierKeybinds()
     {
@@ -229,18 +123,4 @@ public class ModifiersPlugin : BaseUnityPlugin
             if( UnityInput.Current.GetKeyDown(KeyCode.Alpha0 + i)) GloomRowOverride = i+1;
         }
     }
-
-    [HarmonyPatch(typeof(PinsController), "IsPinActive")]
-    [HarmonyPostfix]
-    public static void IsPinActive(ref bool __result, string pinName)
-    {
-        if( pin_overrides.Keys.Contains(pinName))
-        {
-            __result |= pin_overrides[pinName];
-            return;
-        }
-    }
-
-
-
 }
