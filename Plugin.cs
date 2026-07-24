@@ -2,30 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
 using RhythmRift;
 using Shared;
-using Shared.Analytics;
 using Shared.Pins;
-using Shared.SceneLoading;
 using Shared.SceneLoading.Payloads;
-using Shared.TrackData;
 using Shared.TrackSelection;
-using Shared.UGC.Local;
-using Shared.UGC.Steam;
-using Shared.Utilities;
 using UnityEngine;
-using UnityEngine.Networking;
-using UnityEngine.Profiling.Memory.Experimental;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Modifiers;
 
-[BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+[BepInPlugin("rotn.katie.mod.mod", "ModMod", "0.1.0")]
 public class ModifiersPlugin : BaseUnityPlugin
 {
     internal static new ManualLogSource Logger;
@@ -101,7 +91,7 @@ public class ModifiersPlugin : BaseUnityPlugin
 
         // Plugin startup logic
         
-        Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
+        Logger.LogInfo($"Plugin is loaded!");
 
         Logger.LogInfo(install_loc);
 
@@ -120,7 +110,7 @@ public class ModifiersPlugin : BaseUnityPlugin
         {
             Harmony.CreateAndPatchAll(typeof(ModifiersPlugin));
         }
-        Logger.LogInfo("Finished Init"); 
+        Logger.LogInfo("Finished Init");
     }
 
 
@@ -152,7 +142,7 @@ public class ModifiersPlugin : BaseUnityPlugin
         icon.transform.SetParent(screen);
 
         Image img = icon.AddComponent<UnityEngine.UI.Image>();
-        img.preserveAspect = true;        
+        img.preserveAspect = true;
         
         RectTransform trans = (RectTransform)icon.transform;
         trans.anchorMin = new Vector2(0.0f,0.0f);
@@ -173,15 +163,15 @@ public class ModifiersPlugin : BaseUnityPlugin
         float top = 800.0f;
         float step = 70.0f;
 
-        gloomImage = createIcon( screen, top, step, 0, "GloomIcon" ); 
+        gloomImage = createIcon( screen, top, step, 0, "GloomIcon" );
         gloomImage.sprite = pin_overrides["Gloom"] ? gloomOn : gloomOff;
-        enigmaImage = createIcon( screen, top, step, 1, "EnigmaIcon" ); 
+        enigmaImage = createIcon( screen, top, step, 1, "EnigmaIcon" );
         enigmaImage.sprite = pin_overrides["Enigma"] ? enigmaOn : enigmaOff;
-        glassImage = createIcon( screen, top, step, 2, "GlassIcon" ); 
+        glassImage = createIcon( screen, top, step, 2, "GlassIcon" );
         glassImage.sprite = pin_overrides["GlassGuitar"] ? glassOn : glassOff;
-        perfImage = createIcon( screen, top, step, 3, "PerfIcon" ); 
+        perfImage = createIcon( screen, top, step, 3, "PerfIcon" );
         perfImage.sprite = pin_overrides["Perfectionist"] ? perfOn : perfOff;
-        remixImage = createIcon( screen, top, step, 4, "RemixIcon" ); 
+        remixImage = createIcon( screen, top, step, 4, "RemixIcon" );
         remixImage.sprite = customRemix ? remixOn : remixOff;
     }
 
@@ -232,7 +222,7 @@ public class ModifiersPlugin : BaseUnityPlugin
         {
             customRemix = !customRemix;
             if( remixImage is not null ) remixImage.sprite = customRemix ? remixOn : remixOff;
-        } 
+        }
 
         for( int i = 0; i < 7; i++)
         {
