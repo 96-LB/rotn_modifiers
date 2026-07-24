@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using System.IO;
 using RiftOfTheNecroManager;
+using UnityEngine.UIElements.Collections;
 
 namespace ModMod;
 
@@ -23,7 +24,7 @@ public enum SpriteType {
 public static class Assets {
     private static readonly Dictionary<SpriteType, Sprite?> sprites = [];
     
-    public static Sprite GetSprite(SpriteType key) => sprites[key] ?? throw new ArgumentException("Sprite not found", nameof(key));
+    public static Sprite GetSprite(SpriteType key) => sprites.Get(key) ?? throw new ArgumentException("Sprite not found", nameof(key));
     
     private static Sprite? MakeSprite(byte[] data) {
         Texture2D tex = new(0, 0);
@@ -65,8 +66,8 @@ public static class Assets {
             }
             
             // load default sprites from resources
-            if(!sprites[type]) {
-                using var manifest = PluginData.Assembly.GetManifestResourceStream(typeof(Assets), $"{Enum.GetName(typeof(SpriteType), type)}.png");
+            if(sprites.Get(type) is null) {
+                using var manifest = PluginData.Assembly.GetManifestResourceStream(PluginData.Type, $"Assets.{filename}");
                 using var stream = new MemoryStream();
                 manifest.CopyTo(stream);
                 var data = stream.ToArray();

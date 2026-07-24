@@ -12,16 +12,16 @@ public record Modifier(string Name, Sprite OnSprite, Sprite OffSprite, int Index
         return [.. Enabled.Keys];
     }
     
-    public static Modifier Create(string name, Sprite onSprite, Sprite offSprite) {
+    public static Modifier Create(string name, Sprite offSprite, Sprite onSprite) {
         var mod = new Modifier(name, onSprite, offSprite, Enabled.Count);
         Enabled[mod] = false;
         Icons[mod] = null;
         return mod;
     }
     
-    public static bool IsEnabled(string Name) {
+    public static bool IsEnabled(string name) {
         foreach(var kvp in Enabled) {
-            if(kvp.Key.Name == Name) {
+            if(kvp.Key.Name == name) {
                 return kvp.Value;
             }
         }
@@ -30,6 +30,7 @@ public record Modifier(string Name, Sprite OnSprite, Sprite OffSprite, int Index
     
     public static void SetIcon(Modifier mod, Image image) {
         Icons[mod] = image;
+        image.sprite = Enabled[mod] ? mod.OnSprite : mod.OffSprite;
     }
     
     public static bool Toggle(Modifier mod) {
