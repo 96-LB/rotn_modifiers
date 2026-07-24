@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System;
 using System.IO;
 using RiftOfTheNecroManager;
-using UnityEngine.UIElements.Collections;
 
 namespace ModMod;
+
 
 public enum SpriteType {
     GloomOff,
     GloomOn,
     EnigmaOff,
     EnigmaOn,
-    GlassOff,
-    GlassOn,
-    PerfectionistOff,
-    PerfectionistOn,
+    GlassGuitarOff,
+    GlassGuitarOn,
+    PerfectsOff,
+    PerfectsOn,
     RemixOff,
     RemixOn
 }
@@ -27,7 +27,7 @@ public static class Assets {
     
     private static Sprite? MakeSprite(byte[] data) {
         Texture2D tex = new(0, 0);
-        if(!tex.LoadImage(data)) {
+        if(!tex.LoadImage(data, true)) {
             return null;
         }
         return Sprite.Create(tex,
