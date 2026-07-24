@@ -23,7 +23,7 @@ public enum SpriteType {
 public static class Assets {
     private static readonly Dictionary<SpriteType, Sprite?> sprites = [];
     
-    public static Sprite? GetSprite(SpriteType key) => sprites.GetValueOrDefault(key);
+    public static Sprite GetSprite(SpriteType key) => sprites[key] ?? throw new ArgumentException("Sprite not found", nameof(key));
     
     private static Sprite? MakeSprite(byte[] data) {
         Texture2D tex = new(0, 0);

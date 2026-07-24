@@ -1,3 +1,4 @@
+using System.Linq;
 using HarmonyLib;
 using Shared.Pins;
 
@@ -9,10 +10,6 @@ public static class PinsControllerPatch {
     [HarmonyPatch(typeof(PinsController), nameof(PinsController.IsPinActive))]
     [HarmonyPostfix]
     public static void IsPinActive(ref bool __result, string pinName) {
-        if( pin_overrides.Keys.Contains(pinName))
-        {
-            __result |= pin_overrides[pinName];
-            return;
-        }
+        __result |= Modifier.IsEnabled(pinName);
     }
 }
