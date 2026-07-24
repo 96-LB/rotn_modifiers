@@ -7,7 +7,7 @@ namespace ModMod.Patches;
 
 
 [HarmonyPatch(typeof(CustomTracksSelectionSceneController))]
-public static class RRPlayerPerformanceVFXPatch {
+public static class CustomTracksSelectionSceneControllerPatch {
     [HarmonyPatch(typeof(CustomTracksSelectionSceneController), nameof(CustomTracksSelectionSceneController.Awake))]
     [HarmonyPostfix]
     public static void Awake(CustomTracksSelectionSceneController __instance) {
@@ -31,5 +31,12 @@ public static class RRPlayerPerformanceVFXPatch {
             
             mod.SetIcon(img);
         }
+    }
+    
+    [HarmonyPatch(typeof(CustomTracksSelectionSceneController), nameof(CustomTracksSelectionSceneController.Update))]
+    [HarmonyPostfix]
+    public static void Update(CustomTracksSelectionSceneController __instance) {
+        __instance._leaderboardOverlayHandler.Remix = Modifier.IsEnabled("Remix");
+        __instance.FillInTrackDetails();
     }
 }
