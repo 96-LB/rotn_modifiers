@@ -2,7 +2,7 @@ using HarmonyLib;
 using Shared.TrackSelection;
 using UnityEngine;
 
-namespace Modifiers.Patches;
+namespace ModMod.Patches;
 
 
 [HarmonyPatch(typeof(CustomTracksSelectionSceneController))]

@@ -1,7 +1,7 @@
 using HarmonyLib;
 using Shared.TrackSelection;
 
-namespace Modifiers.Patches;
+namespace ModMod.Patches;
 
 
 [HarmonyPatch(typeof(TrackSelectionSceneController))]

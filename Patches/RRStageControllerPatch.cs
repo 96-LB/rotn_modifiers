@@ -1,9 +1,8 @@
 using HarmonyLib;
 using RhythmRift;
 using Shared.Pins;
-using UnityEngine;
 
-namespace Modifiers.Patches;
+namespace ModMod.Patches;
 
 
 [HarmonyPatch(typeof(RRStageController))]

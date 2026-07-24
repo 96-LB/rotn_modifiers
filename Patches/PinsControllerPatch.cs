@@ -1,7 +1,7 @@
 using HarmonyLib;
 using Shared.Pins;
 
-namespace Modifiers.Patches;
+namespace ModMod.Patches;
 
 
 [HarmonyPatch(typeof(PinsController))]

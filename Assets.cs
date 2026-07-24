@@ -5,7 +5,7 @@ using System.IO;
 using RiftOfTheNecroManager;
 using UnityEngine.UIElements.Collections;
 
-namespace Modifiers;
+namespace ModMod;
 
 public enum SpriteType {
     GloomOff,
@@ -21,11 +21,11 @@ public enum SpriteType {
 }
 
 public static class Assets {
-    private static readonly Dictionary<SpriteType, Sprite> sprites = [];
+    private static readonly Dictionary<SpriteType, Sprite?> sprites = [];
     
-    public static Sprite GetSprite(SpriteType key) => sprites.Get(key);
+    public static Sprite? GetSprite(SpriteType key) => sprites.GetValueOrDefault(key);
     
-    private static Sprite MakeSprite(byte[] data) {
+    private static Sprite? MakeSprite(byte[] data) {
         Texture2D tex = new(0, 0);
         if(!tex.LoadImage(data)) {
             return null;
@@ -44,7 +44,7 @@ public static class Assets {
             Log.Info($"No custom icons directory found. The folder should be named '{PluginData.Name}' and located in the same directory as the game executable. No custom icons will be loaded.");
         }
         
-        var spriteTypes = Enum.GetValues(typeof(SpriteType)) as SpriteType[];
+        var spriteTypes = Enum.GetValues(typeof(SpriteType)) as SpriteType[] ?? [];
         foreach(var type in spriteTypes) {
             var filename = $"{Enum.GetName(typeof(SpriteType), type)}.png";
             

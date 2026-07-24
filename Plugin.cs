@@ -5,7 +5,7 @@ using RiftOfTheNecroManager;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Modifiers;
+namespace ModMod;
 
 [BepInPlugin("rotn.katie.mod.mod", "ModMod", "0.0.1")]
 [NecroManagerInfo(isBeta: true)]

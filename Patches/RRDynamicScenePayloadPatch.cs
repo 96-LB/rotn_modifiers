@@ -1,7 +1,7 @@
 using HarmonyLib;
 using Shared.SceneLoading.Payloads;
 
-namespace Modifiers.Patches;
+namespace ModMod.Patches;
 
 
 [HarmonyPatch(typeof(RRDynamicScenePayload))]
