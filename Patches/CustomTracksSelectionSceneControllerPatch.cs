@@ -29,7 +29,7 @@ public static class RRPlayerPerformanceVFXPatch {
             var img = icon.AddComponent<Image>();
             img.preserveAspect = true;
             
-            Modifier.SetIcon(mod, img);
+            mod.SetIcon(img);
         }
     }
 }

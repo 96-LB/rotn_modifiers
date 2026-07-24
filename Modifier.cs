@@ -29,23 +29,30 @@ public record Modifier(string Name, Sprite OnSprite, Sprite OffSprite, int Index
         return false;
     }
     
-    public static void SetIcon(Modifier mod, Image image) {
-        Object.Destroy(Icons.Get(mod)?.gameObject);
-        Icons[mod] = image;
-        image.sprite = Enabled[mod] ? mod.OnSprite : mod.OffSprite;
-    }
-    
     public static bool Toggle(Modifier mod) {
         Enabled[mod] = !Enabled[mod];
         Icons[mod]?.sprite = Enabled[mod] ? mod.OnSprite : mod.OffSprite;
+        Object.Destroy(null);
         return Enabled[mod];
     }
     
     public static void ClearAll() {
-        foreach(var icon in Icons.Values) {
-            Object.Destroy(icon?.gameObject);
+        foreach(var mod in Enabled.Keys) {
+            mod.DestroyIcon();
         }
         Enabled.Clear();
         Icons.Clear();
+    }
+    
+    public void SetIcon(Image image) {
+        DestroyIcon();
+        Icons[this] = image;
+        image.sprite = Enabled[this] ? OnSprite : OffSprite;
+    }
+    
+    public void DestroyIcon() {
+        if(Icons.Get(this)) {
+            Object.Destroy(Icons.Get(this)?.gameObject);
+        }
     }
 }
